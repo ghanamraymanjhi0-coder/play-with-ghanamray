@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Play with Ghanamray</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, "Noto Sans Devanagari", sans-serif;
+    color: white;
+    background: linear-gradient(135deg, #080d27, #171044, #071d38);
+}
+
+.container {
+    width: 100%;
+    max-width: 850px;
+    background: rgba(12, 17, 45, 0.97);
+    border: 1px solid #5548a8;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 0 35px rgba(95, 70, 255, 0.25);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.logo {
+    font-size: 42px;
+}
+
+h1 {
+    color: #ffd86b;
+    font-size: clamp(25px, 5vw, 38px);
+    margin: 8px 0;
+}
+
+.subtitle {
+    color: #c3c9e9;
+    line-height: 1.8;
+}
+
+h2 {
+    line-height: 1.5;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 17px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+button:hover {
+    filter: brightness(1.13);
+    transform: translateY(-2px);
+}
+
+button:focus-visible {
+    outline: 3px solid #ffd86b;
+    outline-offset: 3px;
+}
+
+.primary {
+    background: linear-gradient(90deg, #7657ff, #a54cff);
+    color: white;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.secondary {
+    background: #252d58;
+    color: white;
+    border: 1px solid #535d9c;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.sound-toggle {
+    background: #20274b;
+    color: #ffd86b;
+    border: 1px solid #5f64a8;
+    padding: 10px 15px;
+    margin-top: 14px;
+    width: auto;
+    font-size: 14px;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.card {
+    background: #171e42;
+    padding: 18px;
+    border-radius: 15px;
+    margin: 12px 0;
+    border: 1px solid #303c70;
+}
+
+.rules {
+    color: #e1e5ff;
+    line-height: 2;
+}
+
+.badge {
+    display: inline-block;
+    padding: 7px 13px;
+    border-radius: 30px;
+    background: #302660;
+    color: #e0d3ff;
+    font-weight: bold;
+    margin: 4px;
+}
+
+.top-info {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.info-box {
+    background: #222951;
+    padding: 12px;
+    border-radius: 10px;
+    flex: 1;
+    text-align: center;
+    min-width: 95px;
+}
+
+.small {
+    color: #b9c2e8;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+#question {
+    font-size: 21px;
+    line-height: 1.65;
+    margin: 15px 0 20px;
+}
+
+.question-en {
+    display: block;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.question-hi {
+    display: block;
+    color: #ffd86b;
+    font-size: 19px;
+    font-weight: normal;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.option {
+    background: #222951;
+    color: white;
+    border: 1px solid #424e83;
+    text-align: left;
+    min-height: 82px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.option .option-en {
+    display: block;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.option .option-hi {
+    display: block;
+    color: #cbd2ff;
+    font-weight: normal;
+}
+
+.option.correct {
+    background: #146c43;
+    border-color: #41e39b;
+}
+
+.option.wrong {
+    background: #8c2638;
+    border-color: #ff7084;
+}
+
+.option:disabled {
+    cursor: default;
+    opacity: 1;
+}
+
+.progress-track {
+    background: #252d58;
+    height: 9px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+#progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #42d9ff, #a44cff);
+    transition: width 0.3s;
+}
+
+#timer {
+    color: #ffd86b;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#feedback {
+    min-height: 28px;
+    margin-top: 16px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.7;
+}
+
+.prize-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-top: 18px;
+}
+
+.prize {
+    padding: 10px 5px;
+    background: #20274b;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 13px;
+    color: #c9d0f5;
+}
+
+.prize.current {
+    background: #8b5cf6;
+    color: white;
+    outline: 2px solid #d8c7ff;
+}
+
+.prize.passed {
+    background: #176346;
+    color: white;
+}
+
+.big-result {
+    text-align: center;
+    font-size: clamp(24px, 6vw, 36px);
+    color: #ffd86b;
+    margin: 20px 0;
+    overflow-wrap: anywhere;
+}
+
+.center {
+    text-align: center;
+}
+
+footer {
+    text-align: center;
+    margin-top: 22px;
+    color: #8e9acb;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+@media (max-width: 550px) {
+    body {
+        padding: 8px;
+        align-items: flex-start;
+    }
+
+    .container {
+        padding: 14px;
+        margin: 5px 0;
+    }
+
+    .options {
+        grid-template-columns: 1fr;
+    }
+
+    #question {
+        font-size: 19px;
+    }
+
+    .question-hi {
+        font-size: 18px;
+    }
+
+    .prize-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .info-box {
+        min-width: 80px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <div class="logo">🏆</div>
+
+    <h1>PLAY WITH GHANAMRAY</h1>
+
+    <div class="subtitle">
+        Think Smart • Answer Right • Reach the Top!<br>
+        सोचो समझदारी से • सही जवाब दो • जीत की ओर बढ़ो!
+    </div>
+
+    <button id="soundToggle"
+            class="sound-toggle"
+            onclick="toggleSound()">
+        🔊 Sound ON / ध्वनि चालू
+    </button>
+</header>
+
+
+<!-- WELCOME SCREEN -->
+
+<section id="welcome" class="screen active">
+
+    <div class="card center">
+        <h2>🎮 Welcome, Quiz Champion!</h2>
+        <h3>स्वागत है, क्विज चैंपियन!</h3>
+
+        <p>
+            Are you ready to test your knowledge?<br>
+            क्या तुम अपने ज्ञान की परीक्षा देने के लिए तैयार हो?
+        </p>
+
+        <span class="badge">30 Questions / 30 सवाल</span>
+        <span class="badge">3 Levels / 3 लेवल</span>
+        <span class="badge">₹7 Crore Virtual Prize / वर्चुअल इनाम</span>
+    </div>
+
+    <button class="primary" onclick="showScreen('help')">
+        START GAME 🚀 / गेम शुरू करो
+    </button>
+
+    <p class="small center">
+        This is a quiz game. Prizes are virtual only.<br>
+        यह क्विज गेम है। इनाम वर्चुअल हैं, असली पैसे नहीं।
+    </p>
+
+</section>
+
+
+<!-- HOW TO PLAY -->
+
+<section id="help" class="screen">
+
+    <h2>📘 How to Play / कैसे खेलें?</h2>
+
+    <div class="card rules">
+
+        🟢 <b>Level A — Easy / आसान:</b><br>
+        Questions 1–10. No timer.<br>
+        सवाल 1–10। कोई टाइमर नहीं।
+
+        <br><br>
+
+        🟡 <b>Level B — Medium / मध्यम:</b><br>
+        Questions 11–20. 60 seconds per question.<br>
+        सवाल 11–20। हर सवाल के लिए 60 सेकंड।
+
+        <br><br>
+
+        🔴 <b>Level C — Hard / कठिन:</b><br>
+        Questions 21–30. No timer.<br>
+        सवाल 21–30। कोई टाइमर नहीं।
+
+        <br><br>
+
+        🎯 Choose one of the four options.<br>
+        चार विकल्पों में से एक चुनो।
+
+        <br><br>
+
+        💰 Reach the final virtual prize of ₹7 crore.<br>
+        आखिरी वर्चुअल इनाम ₹7 करोड़ तक पहुँचो।
+
+        <br><br>
+
+        ❌ A wrong answer ends the game.<br>
+        गलत जवाब देने पर गेम खत्म हो जाएगा।
+
+        <br><br>
+
+        🔊 Sound effects play for answers, countdowns and results.<br>
+        जवाब, टाइमर और परिणाम पर आवाज़ें आएँगी।
+    </div>
+
+    <button class="primary" onclick="startLoading()">
+        LET'S PLAY! 🔥 / चलो खेलते हैं!
+    </button>
+
+    <button class="secondary" onclick="showScreen('welcome')">
+        BACK / वापस जाओ
+    </button>
+
+</section>
+
+
+<!-- LOADING SCREEN -->
+
+<section id="loading" class="screen center">
+
+    <h2>⚡ Preparing Your Challenge...</h2>
+    <h3>तुम्हारा गेम तैयार हो रहा है...</h3>
+
+    <p id="loadingText">
+        Getting the questions ready!
+    </p>
+
+    <div class="progress-track">
+        <div id="loadingProgress"
+             style="height:100%;width:0%;background:#a44cff">
+        </div>
+    </div>
+
+</section>
+
+
+<!-- GAME SCREEN -->
+
+<section id="game" class="screen">
+
+    <div class="top-info">
+
+        <div class="info-box">
+            <div class="small">QUESTION / सवाल</div>
+            <b id="questionNumber">1 / 30</b>
+        </div>
+
+        <div class="info-box">
+            <div class="small">LEVEL / लेवल</div>
+            <b id="levelName">LEVEL A</b>
+        </div>
+
+        <div class="info-box">
+            <div class="small">TIMER / समय</div>
+            <b id="timer">∞</b>
+        </div>
+
+    </div>
+
+    <div class="progress-track">
+        <div id="progress"></div>
+    </div>
+
+    <div class="card">
+
+        <div id="levelBadge" class="badge">
+            🟢 EASY LEVEL / आसान लेवल
+        </div>
+
+        <div id="question"></div>
+
+        <div id="options" class="options"></div>
+
+        <div id="feedback" aria-live="polite"></div>
+
+        <button id="nextButton"
+                class="primary"
+                onclick="nextQuestion()"
+                style="display:none">
+            NEXT QUESTION / अगला सवाल ➜
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div class="center" style="color:#ffd86b;font-weight:bold">
+            🏆 VIRTUAL PRIZE LADDER<br>
+            वर्चुअल इनाम की सीढ़ी
+        </div>
+
+        <div id="prizeList" class="prize-list"></div>
+
+    </div>
+
+    <button class="secondary" onclick="quitGame()">
+        QUIT GAME / गेम छोड़ें
+    </button>
+
+</section>
+
+
+<!-- RESULT SCREEN -->
+
+<section id="result" class="screen">
+
+    <div class="center">
+
+        <div id="resultEmoji" style="font-size:65px">🏆</div>
+
+        <h2 id="resultTitle">GAME OVER!</h2>
+
+        <div id="finalPrize" class="big-result">₹0</div>
+
+        <p id="resultMessage"></p>
+
+        <div class="card">
+            <p>Questions answered correctly / सही जवाब:</p>
+            <h2 id="correctCount">0 / 30</h2>
+        </div>
+
+        <button class="primary" onclick="startLoading()">
+            🔄 PLAY AGAIN / दोबारा खेलो
+        </button>
+
+        <button class="secondary" onclick="showScreen('welcome')">
+            MAIN MENU / मुख्य मेन्यू
+        </button>
+
+        <p class="small">
+            All prizes are virtual game scores, not real money.<br>
+            सभी इनाम केवल वर्चुअल गेम स्कोर हैं, असली पैसे नहीं।
+        </p>
+
+    </div>
+
+</section>
+
+
+<footer>
+    Developed with ❤️ by<br>
+    <b>Ghanamray Manjhi</b>
+</footer>
+
+</div>
+
+
+<script>
+
+// ===========================================
+// SOUND SYSTEM — NO EXTERNAL AUDIO FILES
+// ===========================================
+
+let soundEnabled = true;
+let audioContext = null;
+
+function getAudioContext() {
+    if (!soundEnabled) return null;
+
+    try {
+        const AudioAPI =
+            window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioAPI) return null;
+
+        if (!audioContext) {
+            audioContext = new AudioAPI();
+        }
+
+        if (audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+
+        return audioContext;
+
+    } catch (error) {
+        return null;
+    }
+}
+
+
+// Play one electronic tone.
+
+function playTone(frequency, delay = 0, duration = 0.15,
+                  type = "sine", volume = 0.07) {
+
+    const ctx = getAudioContext();
+
+    if (!ctx) return;
+
+    try {
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        const startTime = ctx.currentTime + delay;
+        const endTime = startTime + duration;
+
+        oscillator.type = type;
+
+        oscillator.frequency.setValueAtTime(
+            frequency,
+            startTime
+        );
+
+        gain.gain.setValueAtTime(0.0001, startTime);
+
+        gain.gain.exponentialRampToValueAtTime(
+            volume,
+            startTime + 0.015
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            endTime
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start(startTime);
+        oscillator.stop(endTime + 0.02);
+
+    } catch (error) {
+        // Sound may be unavailable in some browsers.
+    }
+}
+
+
+// Small button sound.
+
+function soundClick() {
+    playTone(650, 0, 0.055, "sine", 0.035);
+}
+
+
+// Start-game tune.
+
+function soundStart() {
+    playTone(440, 0, 0.13, "sine", 0.06);
+    playTone(587, 0.13, 0.13, "sine", 0.06);
+    playTone(784, 0.26, 0.22, "triangle", 0.07);
+}
+
+
+// Correct-answer sound.
+
+function soundCorrect() {
+    playTone(523, 0, 0.12, "sine", 0.07);
+    playTone(659, 0.12, 0.12, "sine", 0.07);
+    playTone(784, 0.24, 0.2, "triangle", 0.08);
+}
+
+
+// Wrong-answer sound.
+
+function soundWrong() {
+    playTone(300, 0, 0.2, "sawtooth", 0.055);
+    playTone(220, 0.18, 0.3, "sawtooth", 0.05);
+}
+
+
+// Countdown tick.
+
+function soundTick() {
+    playTone(900, 0, 0.055, "square", 0.025);
+}
+
+
+// Time-up sound.
+
+function soundTimeUp() {
+    playTone(440, 0, 0.15, "triangle", 0.06);
+    playTone(330, 0.17, 0.15, "triangle", 0.06);
+    playTone(220, 0.34, 0.3, "triangle", 0.06);
+}
+
+
+// Level-up sound.
+
+function soundLevelUp() {
+    playTone(523, 0, 0.12, "triangle", 0.055);
+    playTone(659, 0.12, 0.12, "triangle", 0.055);
+    playTone(880, 0.24, 0.22, "triangle", 0.065);
+}
+
+
+// Victory tune.
+
+function soundVictory() {
+    playTone(523, 0, 0.17, "triangle", 0.07);
+    playTone(659, 0.17, 0.17, "triangle", 0.07);
+    playTone(784, 0.34, 0.17, "triangle", 0.07);
+    playTone(1046, 0.51, 0.4, "triangle", 0.08);
+}
+
+
+// Game-over tune.
+
+function soundGameOver() {
+    playTone(392, 0, 0.2, "triangle", 0.06);
+    playTone(330, 0.2, 0.2, "triangle", 0.06);
+    playTone(262, 0.4, 0.35, "triangle", 0.06);
+}
+
+
+// Toggle sound on/off.
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+
+    const button = document.getElementById("soundToggle");
+
+    if (soundEnabled) {
+        button.textContent = "🔊 Sound ON / ध्वनि चालू";
+        soundClick();
+    } else {
+        button.textContent = "🔇 Sound OFF / ध्वनि बंद";
+    }
+}
+
+
+// Play a light sound on ordinary button clicks.
+// Answer buttons use their own correct/wrong sounds.
+
+document.addEventListener("click", function(event) {
+    const button = event.target.closest("button");
+
+    if (!button) return;
+
+    if (button.classList.contains("option")) return;
+    if (button.id === "soundToggle") return;
+
+    soundClick();
+});
+
+
+// ===========================================
+// BILINGUAL QUESTION BANK
+// ===========================================
+
+const questionBank = [
+
+    // LEVEL A — EASY
+
+    {
+        l: 0,
+        en: "Which planet is known as the Red Planet?",
+        hi: "किस ग्रह को लाल ग्रह कहा जाता है?",
+        o: [
+            ["Mars", "मंगल"],
+            ["Venus", "शुक्र"],
+            ["Jupiter", "बृहस्पति"],
+            ["Mercury", "बुध"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "How many days are there in a normal year?",
+        hi: "एक सामान्य वर्ष में कितने दिन होते हैं?",
+        o: [
+            ["365 days", "365 दिन"],
+            ["366 days", "366 दिन"],
+            ["364 days", "364 दिन"],
+            ["360 days", "360 दिन"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "What is the capital of India?",
+        hi: "भारत की राजधानी क्या है?",
+        o: [
+            ["New Delhi", "नई दिल्ली"],
+            ["Mumbai", "मुंबई"],
+            ["Kolkata", "कोलकाता"],
+            ["Chennai", "चेन्नई"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "Which animal is called the King of the Jungle?",
+        hi: "किस जानवर को जंगल का राजा कहा जाता है?",
+        o: [
+            ["Lion", "शेर"],
+            ["Tiger", "बाघ"],
+            ["Elephant", "हाथी"],
+            ["Leopard", "तेंदुआ"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "How many sides does a triangle have?",
+        hi: "त्रिभुज की कितनी भुजाएँ होती हैं?",
+        o: [
+            ["3 sides", "3 भुजाएँ"],
+            ["4 sides", "4 भुजाएँ"],
+            ["5 sides", "5 भुजाएँ"],
+            ["6 sides", "6 भुजाएँ"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "Which gas do humans need to breathe?",
+        hi: "मनुष्य को साँस लेने के लिए किस गैस की आवश्यकता होती है?",
+        o: [
+            ["Oxygen", "ऑक्सीजन"],
+            ["Helium", "हीलियम"],
+            ["Hydrogen", "हाइड्रोजन"],
+            ["Neon", "निऑन"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "What is 12 × 5?",
+        hi: "12 × 5 कितना होता है?",
+        o: [
+            ["60", "साठ"],
+            ["50", "पचास"],
+            ["55", "पचपन"],
+            ["65", "पैंसठ"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "Which is the largest ocean on Earth?",
+        hi: "पृथ्वी का सबसे बड़ा महासागर कौन-सा है?",
+        o: [
+            ["Pacific Ocean", "प्रशांत महासागर"],
+            ["Indian Ocean", "हिंद महासागर"],
+            ["Arctic Ocean", "आर्कटिक महासागर"],
+            ["Atlantic Ocean", "अटलांटिक महासागर"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "If Ghanamray Manjhi became Prime Minister for one day, what would he do first?",
+        hi: "अगर घनमरे मांझी एक दिन के लिए प्रधानमंत्री बन जाएँ, तो सबसे पहले क्या करेंगे?",
+        o: [
+            ["Give everyone a holiday", "सबको छुट्टी देंगे"],
+            ["Double the homework", "होमवर्क दोगुना करेंगे"],
+            ["Close all playgrounds", "खेल के मैदान बंद करेंगे"],
+            ["Cancel all games", "सभी गेम बंद करेंगे"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 0,
+        en: "Which festival is known as the Festival of Lights in India?",
+        hi: "भारत में किस त्योहार को रोशनी का त्योहार कहा जाता है?",
+        o: [
+            ["Diwali", "दिवाली"],
+            ["Holi", "होली"],
+            ["Eid", "ईद"],
+            ["Baisakhi", "बैसाखी"]
+        ],
+        a: 0
+    },
+
+
+    // LEVEL B — MEDIUM
+
+    {
+        l: 1,
+        en: "Which is the largest planet in our solar system?",
+        hi: "हमारे सौरमंडल का सबसे बड़ा ग्रह कौन-सा है?",
+        o: [
+            ["Jupiter", "बृहस्पति"],
+            ["Saturn", "शनि"],
+            ["Earth", "पृथ्वी"],
+            ["Neptune", "वरुण"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "What is the chemical symbol for gold?",
+        hi: "सोने का रासायनिक प्रतीक क्या है?",
+        o: [
+            ["Au", "Au"],
+            ["Ag", "Ag"],
+            ["Go", "Go"],
+            ["Gd", "Gd"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "What is 15% of 200?",
+        hi: "200 का 15% कितना है?",
+        o: [
+            ["30", "तीस"],
+            ["20", "बीस"],
+            ["35", "पैंतीस"],
+            ["40", "चालीस"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "Which organ pumps blood around the human body?",
+        hi: "मानव शरीर में रक्त पंप करने वाला अंग कौन-सा है?",
+        o: [
+            ["Heart", "हृदय"],
+            ["Lungs", "फेफड़े"],
+            ["Liver", "यकृत"],
+            ["Kidneys", "गुर्दे"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "Complete the pattern: 2, 6, 12, 20, 30, ?",
+        hi: "क्रम पूरा करें: 2, 6, 12, 20, 30, ?",
+        o: [
+            ["42", "बयालीस"],
+            ["40", "चालीस"],
+            ["36", "छत्तीस"],
+            ["44", "चवालीस"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "Who wrote India's national anthem, Jana Gana Mana?",
+        hi: "भारत का राष्ट्रगान 'जन गण मन' किसने लिखा था?",
+        o: [
+            ["Rabindranath Tagore", "रवींद्रनाथ टैगोर"],
+            ["Mahatma Gandhi", "महात्मा गांधी"],
+            ["Bankim Chandra Chatterjee", "बंकिम चंद्र चट्टोपाध्याय"],
+            ["Sarojini Naidu", "सरोजिनी नायडू"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "How many degrees are there in a right angle?",
+        hi: "समकोण कितने अंश का होता है?",
+        o: [
+            ["90 degrees", "90 अंश"],
+            ["45 degrees", "45 अंश"],
+            ["180 degrees", "180 अंश"],
+            ["360 degrees", "360 अंश"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "Which blood cells help the body fight infections?",
+        hi: "कौन-सी रक्त कोशिकाएँ शरीर को संक्रमण से लड़ने में मदद करती हैं?",
+        o: [
+            ["White blood cells", "श्वेत रक्त कोशिकाएँ"],
+            ["Red blood cells", "लाल रक्त कोशिकाएँ"],
+            ["Platelets", "प्लेटलेट्स"],
+            ["Plasma", "प्लाज़्मा"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "If 5 notebooks cost ₹100, what do 8 notebooks cost at the same rate?",
+        hi: "यदि 5 कॉपियों की कीमत ₹100 है, तो उसी दर पर 8 कॉपियों की कीमत कितनी होगी?",
+        o: [
+            ["₹160", "₹160"],
+            ["₹140", "₹140"],
+            ["₹180", "₹180"],
+            ["₹200", "₹200"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 1,
+        en: "Which organisation launched Chandrayaan-3?",
+        hi: "चंद्रयान-3 किस संस्था ने लॉन्च किया?",
+        o: [
+            ["ISRO", "इसरो"],
+            ["NASA", "नासा"],
+            ["ESA", "ईएसए"],
+            ["JAXA", "जाक्सा"]
+        ],
+        a: 0
+    },
+
+
+    // LEVEL C — HARD
+
+    {
+        l: 2,
+        en: "A number is multiplied by 3 and then 5 is added. The result is 26. What is the number?",
+        hi: "किसी संख्या को 3 से गुणा करके उसमें 5 जोड़ने पर 26 मिलता है। वह संख्या क्या है?",
+        o: [
+            ["7", "सात"],
+            ["8", "आठ"],
+            ["9", "नौ"],
+            ["6", "छह"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "What is the square root of 2025?",
+        hi: "2025 का वर्गमूल क्या है?",
+        o: [
+            ["45", "पैंतालीस"],
+            ["35", "पैंतीस"],
+            ["55", "पचपन"],
+            ["25", "पच्चीस"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "A train travels 180 km in 3 hours. What is its average speed?",
+        hi: "एक ट्रेन 3 घंटे में 180 किमी चलती है। उसकी औसत गति क्या है?",
+        o: [
+            ["60 km/h", "60 किमी प्रति घंटा"],
+            ["50 km/h", "50 किमी प्रति घंटा"],
+            ["70 km/h", "70 किमी प्रति घंटा"],
+            ["90 km/h", "90 किमी प्रति घंटा"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "Which part of a cell contains most of its genetic material?",
+        hi: "कोशिका के किस भाग में उसका अधिकांश आनुवंशिक पदार्थ होता है?",
+        o: [
+            ["Nucleus", "केंद्रक"],
+            ["Cell wall", "कोशिका भित्ति"],
+            ["Cytoplasm", "कोशिकाद्रव्य"],
+            ["Ribosome", "राइबोसोम"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "If all roses are flowers, which statement must be true?",
+        hi: "यदि सभी गुलाब फूल हैं, तो कौन-सा कथन निश्चित रूप से सही है?",
+        o: [
+            ["All roses are flowers", "सभी गुलाब फूल हैं"],
+            ["All roses fade quickly", "सभी गुलाब जल्दी मुरझाते हैं"],
+            ["No roses fade", "कोई भी गुलाब नहीं मुरझाता"],
+            ["All flowers are roses", "सभी फूल गुलाब हैं"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "What is the sum of the interior angles of a hexagon?",
+        hi: "षट्भुज के सभी आंतरिक कोणों का योग कितना होता है?",
+        o: [
+            ["720 degrees", "720 अंश"],
+            ["540 degrees", "540 अंश"],
+            ["900 degrees", "900 अंश"],
+            ["360 degrees", "360 अंश"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "A bag has 3 red and 6 blue balls. What is the probability of drawing a red ball?",
+        hi: "एक थैले में 3 लाल और 6 नीली गेंदें हैं। लाल गेंद निकलने की प्रायिकता क्या है?",
+        o: [
+            ["1/3", "एक-तिहाई"],
+            ["1/2", "आधा"],
+            ["2/3", "दो-तिहाई"],
+            ["1/6", "एक-छठा"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "Which law states that every action has an equal and opposite reaction?",
+        hi: "कौन-सा नियम कहता है कि प्रत्येक क्रिया की बराबर और विपरीत प्रतिक्रिया होती है?",
+        o: [
+            ["Newton's Third Law", "न्यूटन का तीसरा नियम"],
+            ["Newton's First Law", "न्यूटन का पहला नियम"],
+            ["Ohm's Law", "ओम का नियम"],
+            ["Law of Gravitation", "गुरुत्वाकर्षण का नियम"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "If x + 7 = 19, what is the value of 2x?",
+        hi: "यदि x + 7 = 19, तो 2x का मान क्या है?",
+        o: [
+            ["24", "24"],
+            ["12", "12"],
+            ["26", "26"],
+            ["38", "38"]
+        ],
+        a: 0
+    },
+
+    {
+        l: 2,
+        en: "Which is the nearest star to Earth?",
+        hi: "पृथ्वी के सबसे निकट कौन-सा तारा है?",
+        o: [
+            ["The Sun", "सूर्य"],
+            ["Sirius", "सीरियस"],
+            ["Proxima Centauri", "प्रॉक्सिमा सेंटॉरी"],
+            ["Polaris", "ध्रुव तारा"]
+        ],
+        a: 0
+    }
+
+];
+
+
+// ===========================================
+// PRIZE LADDER
+// ===========================================
+
+const prizes = [
+    "₹0",
+    "₹1,000",
+    "₹2,000",
+    "₹5,000",
+    "₹10,000",
+    "₹20,000",
+    "₹40,000",
+    "₹80,000",
+    "₹1.6 lakh",
+    "₹3.2 lakh",
+    "₹6.4 lakh",
+    "₹10 lakh",
+    "₹15 lakh",
+    "₹20 lakh",
+    "₹30 lakh",
+    "₹40 lakh",
+    "₹50 lakh",
+    "₹60 lakh",
+    "₹70 lakh",
+    "₹80 lakh",
+    "₹1 crore",
+    "₹1.5 crore",
+    "₹2 crore",
+    "₹2.5 crore",
+    "₹3 crore",
+    "₹3.5 crore",
+    "₹4 crore",
+    "₹5 crore",
+    "₹6 crore",
+    "₹7 crore"
+];
+
+
+// ===========================================
+// GAME VARIABLES
+// ===========================================
+
+let questions = [];
+let current = 0;
+let correct = 0;
+let earned = 0;
+let timerInterval = null;
+let loadingInterval = null;
+let timeLeft = 60;
+let answered = false;
+let resultSoundPlayed = false;
+
+
+// ===========================================
+// SCREEN MANAGEMENT
+// ===========================================
+
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+}
+
+
+// ===========================================
+// SHUFFLE QUESTIONS AND OPTIONS
+// ===========================================
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
+}
+
+
+// ===========================================
+// LOADING SCREEN
+// ===========================================
+
+function startLoading() {
+    clearInterval(timerInterval);
+    clearInterval(loadingInterval);
+
+    soundStart();
+
+    showScreen("loading");
+
+    const bar = document.getElementById("loadingProgress");
+    const text = document.getElementById("loadingText");
+
+    bar.style.width = "0%";
+
+    let progress = 0;
+
+    loadingInterval = setInterval(() => {
+        progress += 5;
+        bar.style.width = progress + "%";
+
+        if (progress < 40) {
+            text.textContent =
+                "Mixing questions... / सवाल तैयार हो रहे हैं...";
+        } else if (progress < 75) {
+            text.textContent =
+                "Preparing prizes... / इनाम तैयार हो रहे हैं...";
+        } else {
+            text.textContent =
+                "Get ready, champion! / तैयार हो जाओ, चैंपियन!";
+        }
+
+        if (progress >= 100) {
+            clearInterval(loadingInterval);
+            beginGame();
+        }
+    }, 35);
+}
+
+
+// ===========================================
+// START NEW GAME
+// ===========================================
+
+function beginGame() {
+    clearInterval(timerInterval);
+
+    questions = [];
+
+    // Shuffle questions separately within each level.
+    for (let level = 0; level < 3; level++) {
+        const levelQuestions = shuffle(
+            questionBank.filter(q => q.l === level).slice()
+        );
+
+        questions.push(...levelQuestions);
+    }
+
+    current = 0;
+    correct = 0;
+    earned = 0;
+    resultSoundPlayed = false;
+
+    createPrizeList();
+
+    showScreen("game");
+
+    displayQuestion();
+}
+
+
+// ===========================================
+// CREATE PRIZE LADDER
+// ===========================================
+
+function createPrizeList() {
+    const list = document.getElementById("prizeList");
+
+    list.innerHTML = "";
+
+    prizes.forEach((prize, index) => {
+        const item = document.createElement("div");
+
+        item.className = "prize";
+        item.id = "prize-" + index;
+
+        item.textContent = (index + 1) + ". " + prize;
+
+        list.appendChild(item);
+    });
+}
+
+
+// ===========================================
+// DISPLAY QUESTION
+// ===========================================
+
+function displayQuestion() {
+    clearInterval(timerInterval);
+
+    answered = false;
+
+    if (current >= questions.length) {
+        finishGame(true);
+        return;
+    }
+
+    const q = questions[current];
+    const level = q.l;
+
+    // Level-up sounds at the start of Level B and Level C.
+    if (current === 10 || current === 20) {
+        soundLevelUp();
+    }
+
+    document.getElementById("questionNumber").textContent =
+        (current + 1) + " / 30";
+
+    document.getElementById("levelName").textContent =
+        ["LEVEL A", "LEVEL B", "LEVEL C"][level];
+
+    document.getElementById("levelBadge").textContent =
+        [
+            "🟢 EASY LEVEL / आसान लेवल",
+            "🟡 MEDIUM LEVEL / मध्यम लेवल",
+            "🔴 HARD LEVEL / कठिन लेवल"
+        ][level];
+
+    // Display the English and Hindi questions in the same position.
+    const questionBox = document.getElementById("question");
+
+    questionBox.innerHTML = "";
+
+    const questionEnglish = document.createElement("span");
+    questionEnglish.className = "question-en";
+    questionEnglish.textContent =
+        "Q" + (current + 1) + ". " + q.en;
+
+    const questionHindi = document.createElement("span");
+    questionHindi.className = "question-hi";
+    questionHindi.textContent = q.hi;
+
+    questionBox.appendChild(questionEnglish);
+    questionBox.appendChild(questionHindi);
+
+    document.getElementById("progress").style.width =
+        (current / questions.length * 100) + "%";
+
+    document.getElementById("feedback").textContent = "";
+
+    document.getElementById("nextButton").style.display = "none";
+
+    // Highlight current prize.
+    document.querySelectorAll(".prize").forEach(prize => {
+        prize.classList.remove("current");
+    });
+
+    const currentPrize = document.getElementById("prize-" + current);
+
+    if (currentPrize) {
+        currentPrize.classList.add("current");
+    }
+
+    // Shuffle options without separating their English/Hindi text.
+    const optionObjects = q.o.map((option, index) => ({
+        en: option[0],
+        hi: option[1],
+        correct: index === q.a
+    }));
+
+    shuffle(optionObjects);
+
+    const optionsBox = document.getElementById("options");
+
+    optionsBox.innerHTML = "";
+
+    optionObjects.forEach(option => {
+        const button = document.createElement("button");
+
+        button.className = "option";
+        button.dataset.correct = option.correct ? "true" : "false";
+
+        const english = document.createElement("span");
+        english.className = "option-en";
+        english.textContent = option.en;
+
+        const hindi = document.createElement("span");
+        hindi.className = "option-hi";
+        hindi.textContent = option.hi;
+
+        button.appendChild(english);
+        button.appendChild(hindi);
+
+        button.onclick = () => selectAnswer(button, option.correct);
+
+        optionsBox.appendChild(button);
+    });
+
+    // Level B has a 60-second timer for each question.
+    if (level === 1) {
+        timeLeft = 60;
+
+        document.getElementById("timer").textContent =
+            timeLeft + "s";
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+
+            document.getElementById("timer").textContent =
+                timeLeft + "s";
+
+            // Tick on the final ten seconds.
+            if (timeLeft <= 10 && timeLeft > 0) {
+                soundTick();
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+
+                soundTimeUp();
+
+                finishGame(
+                    false,
+                    "⏰ Time's up! / समय समाप्त हो गया!"
+                );
+            }
+
+        }, 1000);
+
+    } else {
+        document.getElementById("timer").textContent = "∞";
+    }
+}
+
+
+// ===========================================
+// CHECK ANSWER
+// ===========================================
+
+function selectAnswer(button, isCorrect) {
+    if (answered) return;
+
+    answered = true;
+
+    clearInterval(timerInterval);
+
+    document.querySelectorAll(".option").forEach(option => {
+        option.disabled = true;
+    });
+
+    const feedback = document.getElementById("feedback");
+
+    if (isCorrect) {
+        correct++;
+
+        earned = current + 1;
+
+        soundCorrect();
+
+        button.classList.add("correct");
+
+        feedback.textContent =
+            "✅ Correct Answer! Well done! / सही जवाब! बहुत बढ़िया!";
+
+        feedback.style.color = "#65f0a8";
+
+        const passedPrize = document.getElementById("prize-" + current);
+
+        if (passedPrize) {
+            passedPrize.classList.remove("current");
+            passedPrize.classList.add("passed");
+        }
+
+        document.getElementById("nextButton").textContent =
+            current === 29
+                ? "SEE FINAL RESULT / अंतिम परिणाम 🏆"
+                : "NEXT QUESTION / अगला सवाल ➜";
+
+        document.getElementById("nextButton").style.display = "block";
+
+    } else {
+        soundWrong();
+
+        button.classList.add("wrong");
+
+        // Highlight the correct answer.
+        document.querySelectorAll(".option").forEach(option => {
+            if (option.dataset.correct === "true") {
+                option.classList.add("correct");
+            }
+        });
+
+        feedback.textContent =
+            "❌ Wrong Answer! Game over. / गलत जवाब! गेम खत्म।";
+
+        feedback.style.color = "#ff7d91";
+
+        setTimeout(() => {
+            finishGame(
+                false,
+                "❌ Wrong answer! / गलत जवाब!"
+            );
+        }, 1000);
+    }
+}
+
+
+// ===========================================
+// NEXT QUESTION
+// ===========================================
+
+function nextQuestion() {
+    if (!answered) return;
+
+    current++;
+
+    displayQuestion();
+}
+
+
+// ===========================================
+// FINISH GAME
+// ===========================================
+
+function finishGame(won, message = "") {
+    clearInterval(timerInterval);
+
+    if (!resultSoundPlayed) {
+        resultSoundPlayed = true;
+
+        if (won) {
+            soundVictory();
+        } else {
+            soundGameOver();
+        }
+    }
+
+    showScreen("result");
+
+    const prize = won
+        ? prizes[29]
+        : (earned > 0 ? prizes[earned - 1] : "₹0");
+
+    document.getElementById("resultEmoji").textContent =
+        won ? "🏆" : "🎮";
+
+    document.getElementById("resultTitle").textContent =
+        won
+            ? "CONGRATULATIONS! / बधाई हो!"
+            : "GAME OVER! / गेम खत्म!";
+
+    document.getElementById("finalPrize").textContent = prize;
+
+    document.getElementById("correctCount").textContent =
+        correct + " / 30";
+
+    document.getElementById("resultMessage").textContent =
+        message ||
+        (
+            won
+                ? "Amazing! You completed all 30 questions! / शानदार! तुमने सभी 30 सवाल पूरे कर लिए!"
+                : "Good try! Play again and improve your score. / अच्छी कोशिश! दोबारा खेलो और अपना स्कोर बढ़ाओ।"
+        );
+}
+
+
+// ===========================================
+// QUIT GAME
+// ===========================================
+
+function quitGame() {
+    clearInterval(timerInterval);
+
+    if (confirm("Are you sure you want to quit? / क्या तुम गेम छोड़ना चाहते हो?")) {
+        finishGame(
+            false,
+            "You left the game. Try again! / तुमने गेम छोड़ दिया। फिर से कोशिश करो!"
+        );
+    }
+}
+
+</script>
+
+</body>
+</html>
